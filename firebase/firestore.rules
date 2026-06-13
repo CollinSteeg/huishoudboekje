@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isBookOwner() {
+      return request.auth != null
+        && resource.data.ownerId == request.auth.uid;
+    }
+
+    function isCreatingOwnBook() {
+      return request.auth != null
+        && request.resource.data.ownerId == request.auth.uid;
+    }
+
+    match /householdBooks/{bookId} {
+      allow read: if request.auth != null
+        && resource.data.ownerId == request.auth.uid;
+      allow create: if isCreatingOwnBook();
+      allow update, delete: if isBookOwner();
+
+      match /transactions/{txId} {
+        allow read, write: if request.auth != null
+          && get(/databases/$(database)/documents/householdBooks/$(bookId)).data.ownerId == request.auth.uid;
+      }
+
+      match /categories/{catId} {
+        allow read, write: if request.auth != null
+          && get(/databases/$(database)/documents/householdBooks/$(bookId)).data.ownerId == request.auth.uid;
+      }
+    }
+  }
+}
