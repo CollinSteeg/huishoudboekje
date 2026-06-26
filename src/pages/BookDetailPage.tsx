@@ -91,6 +91,11 @@ export function BookDetailPage() {
     }
   }
 
+  async function handleCategoryChange(transactionId: string, categoryId: string | null) {
+    if (!bookId) return
+    await transactionService.update(bookId, transactionId, { categoryId })
+  }
+
   async function handleLeave() {
     if (!bookId || !user?.email) return
     setLeaving(true)
@@ -157,6 +162,7 @@ export function BookDetailPage() {
           categories={plainCategories}
           onEdit={access.canWrite ? setEditingTransaction : undefined}
           onDelete={access.canWrite ? setDeletingTransaction : undefined}
+          onCategoryChange={access.canWrite ? handleCategoryChange : undefined}
           readOnly={!access.canWrite}
         />
       )}
