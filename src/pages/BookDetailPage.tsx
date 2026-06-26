@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { BookCharts } from '../components/BookCharts'
 import { Button } from '../components/Button'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { Modal } from '../components/Modal'
@@ -14,6 +15,7 @@ import { useHouseholdBook } from '../hooks/useHouseholdBook'
 import { useTransactions } from '../hooks/useTransactions'
 import type { Transaction } from '../types'
 import { getBookAccess } from '../utils/bookAccess'
+import { groupCategoryExpenses, groupMonthlyStats } from '../utils/chartHelpers'
 import { currentMonthFilter } from '../utils/dateHelpers'
 import { householdBookService } from '../services/householdBookService'
 import { transactionService } from '../services/transactionService'
@@ -25,7 +27,7 @@ export function BookDetailPage() {
   const { book, loading: bookLoading } = useHouseholdBook(bookId)
   const [monthFilter, setMonthFilter] = useState(currentMonthFilter())
   const { transactions, loading: txLoading } = useTransactions(bookId, monthFilter)
-  const { plainCategories } = useCategories(bookId)
+  const { plainCategories, allTransactions } = useCategories(bookId)
   const [showForm, setShowForm] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [deletingTransaction, setDeletingTransaction] = useState<Transaction | null>(null)
@@ -47,6 +49,12 @@ export function BookDetailPage() {
       .reduce((sum, tx) => sum + tx.amount, 0)
     return { income, expenses, balance: income + expenses }
   }, [transactions])
+
+  const monthlyData = useMemo(() => groupMonthlyStats(allTransactions), [allTransactions])
+  const categoryData = useMemo(
+    () => groupCategoryExpenses(transactions, plainCategories),
+    [transactions, plainCategories],
+  )
 
   if (bookLoading) {
     return <p>Laden...</p>
@@ -138,6 +146,8 @@ export function BookDetailPage() {
         <StatCard label="Uitgaven" amount={stats.expenses} variant="expense" />
         <StatCard label="Saldo" amount={stats.balance} variant="balance" />
       </div>
+
+      <BookCharts monthlyData={monthlyData} categoryData={categoryData} />
 
       {txLoading ? (
         <p>Laden...</p>

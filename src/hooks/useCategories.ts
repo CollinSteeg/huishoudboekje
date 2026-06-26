@@ -40,6 +40,7 @@ export function useCategories(bookId: string | undefined) {
   return {
     categories: enabled && syncedBookId === bookId ? categories : [],
     plainCategories: enabled && syncedBookId === bookId ? rawCategories : [],
+    allTransactions: enabled && syncedBookId === bookId ? transactions : [],
     loading: categoriesLoading || transactionsLoading,
     error: enabled ? error : null,
   }

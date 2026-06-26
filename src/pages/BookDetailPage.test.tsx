@@ -31,6 +31,10 @@ vi.mock('../hooks/useCategories', () => ({
   useCategories: () => ({
     plainCategories: [createCategory()],
     categories: [],
+    allTransactions: [
+      createTransaction({ amount: 1000, description: 'Salaris', date: new Date('2025-05-10') }),
+      createTransaction({ id: 'tx-2', amount: -50, description: 'Boodschappen', date: new Date('2025-06-15') }),
+    ],
     loading: false,
     error: null,
   }),
@@ -73,9 +77,8 @@ describe('BookDetailPage', () => {
     })
     renderPage()
     expect(screen.getByRole('heading', { name: 'Test Boekje' })).toBeInTheDocument()
-    expect(screen.getByText('Inkomsten')).toBeInTheDocument()
-    expect(screen.getByText('Uitgaven')).toBeInTheDocument()
-    expect(screen.getByText('Saldo')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Inkomsten en uitgaven per maand' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Uitgaven per categorie' })).toBeInTheDocument()
     expect(screen.getByText('Salaris')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '+ Transactie' })).toBeInTheDocument()
   })
