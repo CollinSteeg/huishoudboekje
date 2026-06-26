@@ -106,6 +106,23 @@ This deploys Firestore rules, indexes, and Hosting. The app is served from the `
 
 After deploy: `https://<project-id>.web.app`
 
+### Take the site offline
+
+Disable Hosting to stop serving the website. Firestore and Auth keep running.
+
+```bash
+firebase hosting:disable
+```
+
+Confirm when prompted. Visitors get a “site not found” style page.
+
+**Bring it back online:**
+
+```bash
+npm run build
+firebase deploy --only hosting
+```
+
 ## Architecture
 
 | Layer | Role |
