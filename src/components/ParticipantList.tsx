@@ -65,8 +65,8 @@ export function ParticipantList({
   }
 
   return (
-    <section className="participant-list">
-      <h2>Deelnemers</h2>
+    <details className="participant-list">
+      <summary>Deelnemers</summary>
       <p className="participant-list__hint">
         Nodig anderen uit om dit boekje te bekijken. Deelnemers kunnen alleen lezen.
       </p>
@@ -104,6 +104,6 @@ export function ParticipantList({
           {submitting ? 'Bezig...' : 'Deelnemer toevoegen'}
         </Button>
       </form>
-    </section>
+    </details>
   )
 }
