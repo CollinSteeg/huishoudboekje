@@ -6,7 +6,7 @@ export function computeBudgetStatus(
 ): 'ok' | 'warning' | 'over' {
   if (spent > maxBudget) return 'over'
   const remaining = maxBudget - spent
-  if (maxBudget > 0 && remaining / maxBudget <= 0.2) return 'warning'
+  if (maxBudget > 0 && remaining / maxBudget <= 0.2) return 'warning' // ≤20% left
   return 'ok'
 }
 
