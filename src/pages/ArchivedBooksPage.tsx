@@ -7,7 +7,7 @@ import { householdBookService } from '../services/householdBookService'
 
 export function ArchivedBooksPage() {
   const { user } = useAuth()
-  const { books, loading, error } = useHouseholdBooks(user?.uid, true)
+  const { books, loading, error } = useHouseholdBooks(user, true, false)
   const [restoringBook, setRestoringBook] = useState<HouseholdBook | null>(null)
 
   async function handleRestore(book: HouseholdBook) {

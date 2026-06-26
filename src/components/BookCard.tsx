@@ -5,6 +5,7 @@ import { Button } from './Button'
 interface BookCardProps {
   book: HouseholdBook
   isOwner: boolean
+  isParticipant?: boolean
   onEdit?: () => void
   onArchive?: () => void
   onRestore?: () => void
@@ -13,6 +14,7 @@ interface BookCardProps {
 export function BookCard({
   book,
   isOwner,
+  isParticipant = false,
   onEdit,
   onArchive,
   onRestore,
@@ -23,6 +25,7 @@ export function BookCard({
         <h2>
           <Link to={`/books/${book.id}`}>{book.name}</Link>
         </h2>
+        {isParticipant && <span className="book-card__badge">Gedeeld met jou</span>}
         {book.description && <p>{book.description}</p>}
       </div>
       {isOwner && (

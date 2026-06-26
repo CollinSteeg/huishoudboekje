@@ -184,6 +184,56 @@ textarea {
   gap: 1rem;
 }
 
+.book-card__badge {
+  display: inline-block;
+  margin-top: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: #dbeafe;
+  border-radius: 999px;
+}
+
+.book-detail__readonly-hint {
+  margin-top: 0.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.participant-list {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.participant-list__hint {
+  margin: 0.25rem 0 1rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.participant-list__items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.participant-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.participant-list__form {
+  margin-top: 1rem;
+}
+
 .book-card__actions,
 .category-card__actions,
 .transaction-list__actions {

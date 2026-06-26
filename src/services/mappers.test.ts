@@ -28,6 +28,7 @@ describe('mappers', () => {
       name: 'Gezin',
       description: 'Test',
       ownerId: 'user-1',
+      participantEmails: [],
       archived: false,
       createdAt: createdAt.toDate(),
     })

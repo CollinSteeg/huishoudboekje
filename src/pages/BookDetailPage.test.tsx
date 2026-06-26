@@ -5,16 +5,15 @@ import { describe, expect, it, vi } from 'vitest'
 import { BookDetailPage } from './BookDetailPage'
 import { createCategory, createHouseholdBook, createTransaction } from '../test/helpers'
 
+const useAuthMock = vi.fn()
+const useHouseholdBookMock = vi.fn()
+
 vi.mock('../hooks/useAuth', () => ({
-  useAuth: () => ({ user: { uid: 'user-1' }, loading: false }),
+  useAuth: () => useAuthMock(),
 }))
 
 vi.mock('../hooks/useHouseholdBook', () => ({
-  useHouseholdBook: () => ({
-    book: createHouseholdBook(),
-    loading: false,
-    error: null,
-  }),
+  useHouseholdBook: () => useHouseholdBookMock(),
 }))
 
 vi.mock('../hooks/useTransactions', () => ({
@@ -45,6 +44,14 @@ vi.mock('../services/transactionService', () => ({
   },
 }))
 
+const leaveBookMock = vi.fn()
+
+vi.mock('../services/householdBookService', () => ({
+  householdBookService: {
+    leaveBook: (...args: unknown[]) => leaveBookMock(...args),
+  },
+}))
+
 function renderPage() {
   return render(
     <MemoryRouter initialEntries={['/books/book-1']}>
@@ -57,20 +64,78 @@ function renderPage() {
 }
 
 describe('BookDetailPage', () => {
-  it('renders book details, stats and transactions', () => {
+  it('renders book details, stats and transactions for owner', () => {
+    useAuthMock.mockReturnValue({ user: { uid: 'user-1', email: 'owner@example.com' }, loading: false })
+    useHouseholdBookMock.mockReturnValue({
+      book: createHouseholdBook(),
+      loading: false,
+      error: null,
+    })
     renderPage()
     expect(screen.getByRole('heading', { name: 'Test Boekje' })).toBeInTheDocument()
     expect(screen.getByText('Inkomsten')).toBeInTheDocument()
     expect(screen.getByText('Uitgaven')).toBeInTheDocument()
     expect(screen.getByText('Saldo')).toBeInTheDocument()
     expect(screen.getByText('Salaris')).toBeInTheDocument()
-    expect(screen.getAllByText('Boodschappen').length).toBeGreaterThan(0)
+    expect(screen.getByRole('button', { name: '+ Transactie' })).toBeInTheDocument()
   })
 
-  it('opens transaction form modal', async () => {
+  it('opens transaction form modal for owner', async () => {
+    useAuthMock.mockReturnValue({ user: { uid: 'user-1', email: 'owner@example.com' }, loading: false })
+    useHouseholdBookMock.mockReturnValue({
+      book: createHouseholdBook(),
+      loading: false,
+      error: null,
+    })
     const user = userEvent.setup()
     renderPage()
     await user.click(screen.getByRole('button', { name: '+ Transactie' }))
     expect(screen.getByRole('heading', { name: 'Nieuwe transactie' })).toBeInTheDocument()
+  })
+
+  it('shows read-only view for participants without write actions', () => {
+    useAuthMock.mockReturnValue({
+      user: { uid: 'user-2', email: 'participant@example.com' },
+      loading: false,
+    })
+    useHouseholdBookMock.mockReturnValue({
+      book: createHouseholdBook({
+        participantEmails: ['participant@example.com'],
+      }),
+      loading: false,
+      error: null,
+    })
+
+    renderPage()
+
+    expect(screen.getByText('Je hebt alleen-lezen toegang tot dit boekje.')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '+ Transactie' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Bewerken' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Verwijderen' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Verlaat boekje' })).toBeInTheDocument()
+  })
+
+  it('lets participants leave a shared book', async () => {
+    useAuthMock.mockReturnValue({
+      user: { uid: 'user-2', email: 'participant@example.com' },
+      loading: false,
+    })
+    useHouseholdBookMock.mockReturnValue({
+      book: createHouseholdBook({
+        participantEmails: ['participant@example.com'],
+      }),
+      loading: false,
+      error: null,
+    })
+    leaveBookMock.mockResolvedValue(undefined)
+
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: 'Verlaat boekje' }))
+    await user.click(screen.getByRole('button', { name: 'Verlaten' }))
+
+    expect(leaveBookMock).toHaveBeenCalledWith('book-1', 'participant@example.com')
+    expect(await screen.findByText('Home')).toBeInTheDocument()
   })
 })

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { CategoryCard } from '../components/CategoryCard'
@@ -9,6 +9,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useCategories } from '../hooks/useCategories'
 import { useHouseholdBook } from '../hooks/useHouseholdBook'
 import type { CategoryWithBudget } from '../types'
+import { getBookAccess } from '../utils/bookAccess'
 import { categoryService } from '../services/categoryService'
 
 export function CategoriesPage() {
@@ -21,6 +22,11 @@ export function CategoriesPage() {
   const [deletingCategory, setDeletingCategory] = useState<CategoryWithBudget | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
+  const access = useMemo(
+    () => (book && user ? getBookAccess(book, user) : null),
+    [book, user],
+  )
+
   if (bookLoading) {
     return <p>Laden...</p>
   }
@@ -29,7 +35,7 @@ export function CategoriesPage() {
     return <Navigate to="/" replace />
   }
 
-  if (book.ownerId !== user?.uid) {
+  if (!access?.canRead) {
     return <p className="error">Je hebt geen toegang tot dit boekje.</p>
   }
 
@@ -65,8 +71,13 @@ export function CategoriesPage() {
           </p>
           <h1>Categorieën</h1>
           <p>Bekijk hoeveel budget er nog beschikbaar is per categorie.</p>
+          {!access.canWrite && (
+            <p className="book-detail__readonly-hint">Je hebt alleen-lezen toegang tot dit boekje.</p>
+          )}
         </div>
-        <Button onClick={() => setShowForm(true)}>Nieuwe categorie</Button>
+        {access.canWrite && (
+          <Button onClick={() => setShowForm(true)}>Nieuwe categorie</Button>
+        )}
       </div>
 
       {loading ? (
@@ -79,40 +90,45 @@ export function CategoriesPage() {
             <CategoryCard
               key={category.id}
               category={category}
-              onEdit={() => setEditingCategory(category)}
-              onDelete={() => setDeletingCategory(category)}
+              onEdit={access.canWrite ? () => setEditingCategory(category) : undefined}
+              onDelete={access.canWrite ? () => setDeletingCategory(category) : undefined}
+              readOnly={!access.canWrite}
             />
           ))}
         </div>
       )}
 
-      <Modal title="Nieuwe categorie" open={showForm} onClose={() => setShowForm(false)}>
-        <CategoryForm onSubmit={handleCreate} onCancel={() => setShowForm(false)} />
-      </Modal>
+      {access.canWrite && (
+        <>
+          <Modal title="Nieuwe categorie" open={showForm} onClose={() => setShowForm(false)}>
+            <CategoryForm onSubmit={handleCreate} onCancel={() => setShowForm(false)} />
+          </Modal>
 
-      <Modal
-        title="Categorie bewerken"
-        open={!!editingCategory}
-        onClose={() => setEditingCategory(null)}
-      >
-        {editingCategory && (
-          <CategoryForm
-            initial={editingCategory}
-            onSubmit={handleUpdate}
-            onCancel={() => setEditingCategory(null)}
+          <Modal
+            title="Categorie bewerken"
+            open={!!editingCategory}
+            onClose={() => setEditingCategory(null)}
+          >
+            {editingCategory && (
+              <CategoryForm
+                initial={editingCategory}
+                onSubmit={handleUpdate}
+                onCancel={() => setEditingCategory(null)}
+              />
+            )}
+          </Modal>
+
+          <ConfirmDialog
+            open={!!deletingCategory}
+            title="Categorie verwijderen"
+            message={`Weet je zeker dat je "${deletingCategory?.name}" wilt verwijderen?`}
+            confirmLabel="Verwijderen"
+            onConfirm={handleDelete}
+            onCancel={() => setDeletingCategory(null)}
+            loading={actionLoading}
           />
-        )}
-      </Modal>
-
-      <ConfirmDialog
-        open={!!deletingCategory}
-        title="Categorie verwijderen"
-        message={`Weet je zeker dat je "${deletingCategory?.name}" wilt verwijderen?`}
-        confirmLabel="Verwijderen"
-        onConfirm={handleDelete}
-        onCancel={() => setDeletingCategory(null)}
-        loading={actionLoading}
-      />
+        </>
+      )}
     </section>
   )
 }

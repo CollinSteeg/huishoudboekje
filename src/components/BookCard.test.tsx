@@ -33,6 +33,15 @@ describe('BookCard', () => {
     expect(onArchive).toHaveBeenCalledOnce()
   })
 
+  it('shows shared badge for participants', () => {
+    render(
+      <MemoryRouter>
+        <BookCard book={book} isOwner={false} isParticipant />
+      </MemoryRouter>,
+    )
+    expect(screen.getByText('Gedeeld met jou')).toBeInTheDocument()
+  })
+
   it('shows restore button for archived books', async () => {
     const user = userEvent.setup()
     const onRestore = vi.fn()

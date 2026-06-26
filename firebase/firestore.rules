@@ -8,23 +8,78 @@ service cloud.firestore {
 
     function isCreatingOwnBook() {
       return request.auth != null
-        && request.resource.data.ownerId == request.auth.uid;
+        && request.resource.data.ownerId == request.auth.uid
+        && (!('participantEmails' in request.resource.data)
+          || request.resource.data.participantEmails.size() == 0);
+    }
+
+    function isBookParticipant() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email in resource.data.get('participantEmails', []);
+    }
+
+    function canReadBook() {
+      return isBookOwner() || isBookParticipant();
+    }
+
+    function canWriteBook() {
+      return isBookOwner();
+    }
+
+    function isLeavingBook() {
+      let oldEmails = resource.data.get('participantEmails', []);
+      let newEmails = request.resource.data.get('participantEmails', []);
+      return isBookParticipant()
+        && request.auth.token.email != null
+        && request.auth.token.email in oldEmails
+        && !(request.auth.token.email in newEmails)
+        && newEmails.size() == oldEmails.size() - 1
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.name == resource.data.name
+        && request.resource.data.description == resource.data.description
+        && request.resource.data.archived == resource.data.archived
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    function canUpdateBook() {
+      return canWriteBook() || isLeavingBook();
+    }
+
+    function canReadBookById(bookId) {
+      let book = get(/databases/$(database)/documents/householdBooks/$(bookId)).data;
+      return request.auth != null && (
+        book.ownerId == request.auth.uid
+        || (request.auth.token.email != null
+          && request.auth.token.email in book.get('participantEmails', []))
+      );
+    }
+
+    function canWriteBookById(bookId) {
+      return request.auth != null
+        && get(/databases/$(database)/documents/householdBooks/$(bookId)).data.ownerId == request.auth.uid;
+    }
+
+    match /userEmails/{email} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.auth.token.email == email;
     }
 
     match /householdBooks/{bookId} {
-      allow read: if request.auth != null
-        && resource.data.ownerId == request.auth.uid;
+      allow read: if canReadBook();
       allow create: if isCreatingOwnBook();
-      allow update, delete: if isBookOwner();
+      allow update: if canUpdateBook();
+      allow delete: if canWriteBook();
 
       match /transactions/{txId} {
-        allow read, write: if request.auth != null
-          && get(/databases/$(database)/documents/householdBooks/$(bookId)).data.ownerId == request.auth.uid;
+        allow read: if canReadBookById(bookId);
+        allow write: if canWriteBookById(bookId);
       }
 
       match /categories/{catId} {
-        allow read, write: if request.auth != null
-          && get(/databases/$(database)/documents/householdBooks/$(bookId)).data.ownerId == request.auth.uid;
+        allow read: if canReadBookById(bookId);
+        allow write: if canWriteBookById(bookId);
       }
     }
   }

@@ -1,5 +1,7 @@
 import {
   addDoc,
+  arrayRemove,
+  arrayUnion,
   collection,
   doc,
   onSnapshot,
@@ -39,6 +41,30 @@ export const householdBookService = {
     )
   },
 
+  subscribeParticipated(
+    email: string,
+    archived: boolean,
+    callback: (books: HouseholdBook[]) => void,
+    onError?: (error: Error) => void,
+  ): Unsubscribe {
+    const normalizedEmail = email.toLowerCase().trim()
+    const q = query(
+      booksCollection,
+      where('participantEmails', 'array-contains', normalizedEmail),
+      where('archived', '==', archived),
+    )
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const books = snapshot.docs.map(mapHouseholdBook)
+        books.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        callback(books)
+      },
+      (error) => onError?.(error),
+    )
+  },
+
   subscribeById(
     bookId: string,
     callback: (book: HouseholdBook | null) => void,
@@ -62,6 +88,7 @@ export const householdBookService = {
       name: input.name.trim(),
       description: input.description?.trim() || '',
       ownerId,
+      participantEmails: [],
       archived: false,
       createdAt: Timestamp.now(),
     })
@@ -82,5 +109,23 @@ export const householdBookService = {
 
   async setArchived(bookId: string, archived: boolean): Promise<void> {
     await updateDoc(doc(db, 'householdBooks', bookId), { archived })
+  },
+
+  async addParticipant(bookId: string, email: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim()
+    await updateDoc(doc(db, 'householdBooks', bookId), {
+      participantEmails: arrayUnion(normalizedEmail),
+    })
+  },
+
+  async removeParticipant(bookId: string, email: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim()
+    await updateDoc(doc(db, 'householdBooks', bookId), {
+      participantEmails: arrayRemove(normalizedEmail),
+    })
+  },
+
+  async leaveBook(bookId: string, email: string): Promise<void> {
+    await this.removeParticipant(bookId, email)
   },
 }

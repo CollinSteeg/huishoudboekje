@@ -5,8 +5,9 @@ import { Button } from './Button'
 interface TransactionListProps {
   transactions: Transaction[]
   categories: Category[]
-  onEdit: (transaction: Transaction) => void
-  onDelete: (transaction: Transaction) => void
+  onEdit?: (transaction: Transaction) => void
+  onDelete?: (transaction: Transaction) => void
+  readOnly?: boolean
 }
 
 export function TransactionList({
@@ -14,6 +15,7 @@ export function TransactionList({
   categories,
   onEdit,
   onDelete,
+  readOnly = false,
 }: TransactionListProps) {
   if (transactions.length === 0) {
     return <p className="empty-state">Nog geen transacties deze maand.</p>
@@ -52,12 +54,16 @@ export function TransactionList({
             >
               {formatCurrency(transaction.amount)}
             </span>
-            <Button variant="secondary" onClick={() => onEdit(transaction)}>
-              Bewerken
-            </Button>
-            <Button variant="danger" onClick={() => onDelete(transaction)}>
-              Verwijderen
-            </Button>
+            {!readOnly && onEdit && onDelete && (
+              <>
+                <Button variant="secondary" onClick={() => onEdit(transaction)}>
+                  Bewerken
+                </Button>
+                <Button variant="danger" onClick={() => onDelete(transaction)}>
+                  Verwijderen
+                </Button>
+              </>
+            )}
           </div>
         </li>
       ))}

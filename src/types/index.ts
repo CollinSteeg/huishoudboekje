@@ -3,6 +3,7 @@ export interface HouseholdBook {
   name: string
   description?: string
   ownerId: string
+  participantEmails: string[]
   archived: boolean
   createdAt: Date
 }

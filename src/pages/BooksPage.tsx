@@ -7,11 +7,12 @@ import { Modal } from '../components/Modal'
 import { useAuth } from '../hooks/useAuth'
 import { useHouseholdBooks } from '../hooks/useHouseholdBooks'
 import type { HouseholdBook } from '../types'
+import { getBookAccess } from '../utils/bookAccess'
 import { householdBookService } from '../services/householdBookService'
 
 export function BooksPage() {
   const { user } = useAuth()
-  const { books, loading, error } = useHouseholdBooks(user?.uid, false)
+  const { books, loading, error } = useHouseholdBooks(user, false)
   const [showForm, setShowForm] = useState(false)
   const [editingBook, setEditingBook] = useState<HouseholdBook | null>(null)
   const [archivingBook, setArchivingBook] = useState<HouseholdBook | null>(null)
@@ -57,15 +58,19 @@ export function BooksPage() {
       )}
 
       <div className="card-grid">
-        {books.map((book) => (
-          <BookCard
-            key={book.id}
-            book={book}
-            isOwner={book.ownerId === user?.uid}
-            onEdit={() => setEditingBook(book)}
-            onArchive={() => setArchivingBook(book)}
-          />
-        ))}
+        {books.map((book) => {
+          const access = user ? getBookAccess(book, user) : null
+          return (
+            <BookCard
+              key={book.id}
+              book={book}
+              isOwner={access?.isOwner ?? false}
+              isParticipant={access?.isParticipant ?? false}
+              onEdit={access?.canWrite ? () => setEditingBook(book) : undefined}
+              onArchive={access?.canWrite ? () => setArchivingBook(book) : undefined}
+            />
+          )
+        })}
       </div>
 
       <Modal title="Nieuw huishoudboekje" open={showForm} onClose={() => setShowForm(false)}>

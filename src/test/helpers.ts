@@ -6,6 +6,7 @@ export function createHouseholdBook(overrides: Partial<HouseholdBook> = {}): Hou
     name: 'Test Boekje',
     description: 'Test omschrijving',
     ownerId: 'user-1',
+    participantEmails: [],
     archived: false,
     createdAt: new Date('2025-01-01'),
     ...overrides,

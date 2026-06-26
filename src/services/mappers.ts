@@ -12,6 +12,7 @@ export function mapHouseholdBook(
     name: data.name,
     description: data.description,
     ownerId: data.ownerId,
+    participantEmails: data.participantEmails ?? [],
     archived: data.archived ?? false,
     createdAt: toDate(data.createdAt),
   }
