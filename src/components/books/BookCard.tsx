@@ -21,13 +21,13 @@ export function BookCard({
 }: BookCardProps) {
   return (
     <article className="book-card">
-      <div className="book-card__content">
-        <h2>
-          <Link to={`/books/${book.id}`}>{book.name}</Link>
-        </h2>
-        {isParticipant && <span className="book-card__badge">Gedeeld met jou</span>}
-        {book.description && <p>{book.description}</p>}
-      </div>
+      <Link to={`/books/${book.id}`} className="book-card__link">
+        <div className="book-card__content">
+          <h2>{book.name}</h2>
+          {isParticipant && <span className="book-card__badge">Gedeeld met jou</span>}
+          {book.description && <p>{book.description}</p>}
+        </div>
+      </Link>
       {isOwner && (
         <div className="book-card__actions">
           {onEdit && (

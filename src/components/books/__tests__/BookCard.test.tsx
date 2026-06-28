@@ -14,7 +14,7 @@ describe('BookCard', () => {
         <BookCard book={book} isOwner={false} />
       </MemoryRouter>,
     )
-    expect(screen.getByRole('link', { name: book.name })).toHaveAttribute('href', '/books/book-1')
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/books/book-1')
     expect(screen.getByText('Test omschrijving')).toBeInTheDocument()
   })
 
