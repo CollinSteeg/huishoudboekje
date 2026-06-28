@@ -195,7 +195,11 @@ export function BookDetailPage() {
           <ConfirmDialog
             open={!!deletingTransaction}
             title="Transactie verwijderen"
-            message="Weet je zeker dat je deze transactie wilt verwijderen?"
+            message={
+              deletingTransaction
+                ? `Weet je zeker dat je "${deletingTransaction.description || (deletingTransaction.amount >= 0 ? 'Inkomst' : 'Uitgave')}" wilt verwijderen?`
+                : ''
+            }
             confirmLabel="Verwijderen"
             onConfirm={handleDelete}
             onCancel={() => setDeletingTransaction(null)}

@@ -38,6 +38,7 @@ export function BookCharts({ monthlyData, categoryData }: BookChartsProps) {
                 stroke="#16a34a"
                 strokeWidth={2}
                 dot={{ r: 4 }}
+                activeDot={false}
               />
               <Line
                 type="monotone"
@@ -46,6 +47,7 @@ export function BookCharts({ monthlyData, categoryData }: BookChartsProps) {
                 stroke="#dc2626"
                 strokeWidth={2}
                 dot={{ r: 4 }}
+                activeDot={false}
               />
             </LineChart>
           </ResponsiveContainer>
