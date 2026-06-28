@@ -1,11 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { Layout } from './components/Layout'
-import { ProtectedRoute } from './components/ProtectedRoute'
-import { ArchivedBooksPage } from './pages/ArchivedBooksPage'
-import { BookDetailPage } from './pages/BookDetailPage'
-import { BooksPage } from './pages/BooksPage'
-import { CategoriesPage } from './pages/CategoriesPage'
-import { LoginPage } from './pages/LoginPage'
+import { Layout } from './components/shared/Layout'
+import { ProtectedRoute } from './components/shared/ProtectedRoute'
+import { ArchivedBooksPage } from './pages/books/ArchivedBooksPage'
+import { BookDetailPage } from './pages/books/BookDetailPage'
+import { BooksPage } from './pages/books/BooksPage'
+import { CategoriesPage } from './pages/categories/CategoriesPage'
+import { LoginPage } from './pages/auth/LoginPage'
 
 export default function App() {
   return (

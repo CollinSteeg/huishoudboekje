@@ -130,7 +130,10 @@ firebase deploy --only hosting
 | `src/lib/firebase.ts` | Firebase app, Auth, and Firestore instances |
 | `src/services/` | Firestore CRUD and `onSnapshot` subscriptions (no React) |
 | `src/hooks/` | Real-time data hooks wrapping services |
-| `src/components/` | Reusable UI |
-| `src/pages/` | Screens and composition |
+| `src/components/shared/` | Reusable UI (Button, Modal, Layout, …) |
+| `src/components/books/` | Book-related UI (BookCard, charts, participants, …) |
+| `src/components/categories/` | Category UI (CategoryCard, BudgetBar, …) |
+| `src/components/transactions/` | Transaction UI (TransactionForm, TransactionList) |
+| `src/pages/` | Screens grouped by use case (`auth`, `books`, `categories`) |
 
 Authentication flows through `src/services/authService.ts` (email/password sign-up, sign-in, sign-out). Data hooks subscribe to Firestore and update the UI automatically when documents change.
