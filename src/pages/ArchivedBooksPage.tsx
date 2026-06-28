@@ -3,6 +3,7 @@ import { BookCard } from '../components/BookCard'
 import { useAuth } from '../hooks/useAuth'
 import { useHouseholdBooks } from '../hooks/useHouseholdBooks'
 import type { HouseholdBook } from '../types'
+import { getBookAccess } from '../utils/bookAccess'
 import { householdBookService } from '../services/householdBookService'
 
 export function ArchivedBooksPage() {
@@ -35,14 +36,17 @@ export function ArchivedBooksPage() {
       )}
 
       <div className="card-grid">
-        {books.map((book) => (
-          <BookCard
-            key={book.id}
-            book={book}
-            isOwner={book.ownerId === user?.uid}
-            onRestore={() => handleRestore(book)}
-          />
-        ))}
+        {books.map((book) => {
+          const access = user ? getBookAccess(book, user) : null
+          return (
+            <BookCard
+              key={book.id}
+              book={book}
+              isOwner={access?.isOwner ?? false}
+              onRestore={() => handleRestore(book)}
+            />
+          )
+        })}
       </div>
 
       {restoringBook && <p>Herstellen...</p>}
