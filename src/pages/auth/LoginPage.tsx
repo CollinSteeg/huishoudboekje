@@ -4,6 +4,7 @@ import { Button } from '../../components/shared/Button'
 import { FormField, TextInput } from '../../components/shared/FormField'
 import { useAuth } from '../../hooks/useAuth'
 import { authService } from '../../services/authService'
+import { getAuthErrorMessage } from '../../utils/authErrors'
 
 export function LoginPage() {
   const { user, loading } = useAuth()
@@ -28,7 +29,7 @@ export function LoginPage() {
         await authService.signIn(email, password)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Inloggen mislukt')
+      setError(getAuthErrorMessage(err, isRegister ? 'register' : 'login'))
     } finally {
       setSubmitting(false)
     }
