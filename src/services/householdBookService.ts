@@ -13,6 +13,7 @@ import {
 import { Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import type { CreateHouseholdBookInput, HouseholdBook } from '../types'
+import { normalizeEmail } from '../utils/email'
 import { mapHouseholdBook } from './mappers'
 
 const booksCollection = collection(db, 'householdBooks')
@@ -47,7 +48,7 @@ export const householdBookService = {
     callback: (books: HouseholdBook[]) => void,
     onError?: (error: Error) => void,
   ): Unsubscribe {
-    const normalizedEmail = email.toLowerCase().trim()
+    const normalizedEmail = normalizeEmail(email)
     const q = query(
       booksCollection,
       where('participantEmails', 'array-contains', normalizedEmail),
@@ -112,14 +113,14 @@ export const householdBookService = {
   },
 
   async addParticipant(bookId: string, email: string): Promise<void> {
-    const normalizedEmail = email.toLowerCase().trim()
+    const normalizedEmail = normalizeEmail(email)
     await updateDoc(doc(db, 'householdBooks', bookId), {
       participantEmails: arrayUnion(normalizedEmail),
     })
   },
 
   async removeParticipant(bookId: string, email: string): Promise<void> {
-    const normalizedEmail = email.toLowerCase().trim()
+    const normalizedEmail = normalizeEmail(email)
     await updateDoc(doc(db, 'householdBooks', bookId), {
       participantEmails: arrayRemove(normalizedEmail),
     })

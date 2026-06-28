@@ -30,6 +30,20 @@ describe('getBookAccess', () => {
     })
   })
 
+  it('matches participants regardless of email casing and whitespace', () => {
+    const book = createHouseholdBook({
+      ownerId: 'user-1',
+      participantEmails: ['participant@example.com'],
+    })
+    const participantWithSpaces = createMockUser('user-2', '  Participant@Example.com  ')
+    expect(getBookAccess(book, participantWithSpaces)).toEqual({
+      isOwner: false,
+      isParticipant: true,
+      canRead: true,
+      canWrite: false,
+    })
+  })
+
   it('denies access to non-participants', () => {
     const book = createHouseholdBook({
       ownerId: 'user-1',

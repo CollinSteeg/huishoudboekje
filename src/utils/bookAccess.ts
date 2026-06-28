@@ -1,4 +1,5 @@
 import type { HouseholdBook } from '../types'
+import { normalizeEmail } from './email'
 
 export interface BookAccess {
   isOwner: boolean
@@ -15,7 +16,7 @@ export function getBookAccess(
   const isParticipant =
     !isOwner &&
     !!user.email &&
-    book.participantEmails.includes(user.email.toLowerCase())
+    book.participantEmails.includes(normalizeEmail(user.email))
   return {
     isOwner,
     isParticipant,

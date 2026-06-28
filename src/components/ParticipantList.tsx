@@ -3,6 +3,7 @@ import { Button } from './Button'
 import { FormField, TextInput } from './FormField'
 import { householdBookService } from '../services/householdBookService'
 import { userEmailService } from '../services/userEmailService'
+import { normalizeEmail } from '../utils/email'
 
 interface ParticipantListProps {
   bookId: string
@@ -22,10 +23,10 @@ export function ParticipantList({
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault()
-    const normalized = email.toLowerCase().trim()
+    const normalized = normalizeEmail(email)
     if (!normalized) return
 
-    if (ownerEmail && normalized === ownerEmail.toLowerCase()) {
+    if (ownerEmail && normalized === normalizeEmail(ownerEmail)) {
       setError('Je kunt jezelf niet als deelnemer toevoegen.')
       return
     }

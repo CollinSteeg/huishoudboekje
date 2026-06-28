@@ -1,9 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
-
-function normalizeEmail(email: string): string {
-  return email.toLowerCase().trim()
-}
+import { normalizeEmail } from '../utils/email'
 
 export const userEmailService = {
   async register(email: string, uid: string): Promise<void> {
