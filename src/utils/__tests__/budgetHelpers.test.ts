@@ -7,9 +7,14 @@ describe('computeBudgetStatus', () => {
     expect(computeBudgetStatus(100, 50)).toBe('ok')
   })
 
-  it('returns warning when 20% or less budget remains', () => {
+  it('returns warning when more than 0% but at most 20% budget remains', () => {
     expect(computeBudgetStatus(100, 85)).toBe('warning')
     expect(computeBudgetStatus(100, 80)).toBe('warning')
+  })
+
+  it('returns depleted when budget is fully used', () => {
+    expect(computeBudgetStatus(200, 200)).toBe('depleted')
+    expect(computeBudgetStatus(100, 100)).toBe('depleted')
   })
 
   it('returns over when spent exceeds max budget', () => {

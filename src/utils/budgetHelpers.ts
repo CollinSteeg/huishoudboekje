@@ -3,10 +3,11 @@ import type { Category, CategoryWithBudget, Transaction } from '../types'
 export function computeBudgetStatus(
   maxBudget: number,
   spent: number,
-): 'ok' | 'warning' | 'over' {
+): 'ok' | 'warning' | 'depleted' | 'over' {
   if (spent > maxBudget) return 'over'
+  if (maxBudget > 0 && spent === maxBudget) return 'depleted'
   const remaining = maxBudget - spent
-  if (maxBudget > 0 && remaining / maxBudget <= 0.2) return 'warning' // ≤20% left
+  if (maxBudget > 0 && remaining > 0 && remaining / maxBudget <= 0.2) return 'warning'
   return 'ok'
 }
 

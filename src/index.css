@@ -508,6 +508,7 @@ textarea {
   background: #f59e0b;
 }
 
+.budget-bar__fill--depleted,
 .budget-bar__fill--over {
   background: #dc2626;
 }

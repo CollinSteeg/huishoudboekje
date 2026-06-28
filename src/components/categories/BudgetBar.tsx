@@ -12,6 +12,16 @@ interface BudgetBarProps {
   category: CategoryWithBudget
 }
 
+function formatBudgetSummary(category: CategoryWithBudget): string {
+  if (category.budgetStatus === 'over') {
+    return `${formatCurrency(category.spent - category.maxBudget)} over budget`
+  }
+  if (category.budgetStatus === 'depleted') {
+    return 'Budget op'
+  }
+  return `${formatCurrency(category.remaining)} over van ${formatCurrency(category.maxBudget)}`
+}
+
 export function BudgetBar({ category }: BudgetBarProps) {
   const expired = isCategoryExpired(category.endDate)
   const spentPercent =
@@ -25,9 +35,7 @@ export function BudgetBar({ category }: BudgetBarProps) {
     <div className="budget-bar">
       <div className="budget-bar__header">
         <span>{category.name}</span>
-        <span>
-          {formatCurrency(category.remaining)} over van {formatCurrency(category.maxBudget)}
-        </span>
+        <span>{formatBudgetSummary(category)}</span>
       </div>
       <div className="budget-bar__track">
         <div
@@ -42,9 +50,6 @@ export function BudgetBar({ category }: BudgetBarProps) {
             {expired ? 'Verlopen' : 'Geldig tot'}{' '}
             {category.endDate.toLocaleDateString('nl-NL', dateFormat)}
           </span>
-        )}
-        {category.budgetStatus === 'over' && (
-          <span className="budget-bar__warning">Over budget!</span>
         )}
         {category.budgetStatus === 'warning' && (
           <span className="budget-bar__warning">Bijna op</span>

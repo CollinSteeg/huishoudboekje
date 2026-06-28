@@ -17,7 +17,7 @@ describe('BudgetBar', () => {
     expect(screen.getByText(/Uitgegeven:/)).toBeInTheDocument()
   })
 
-  it('shows over budget warning', () => {
+  it('shows over budget amount instead of negative remaining', () => {
     const category = createCategoryWithBudget({
       budgetStatus: 'over',
       spent: 600,
@@ -25,7 +25,19 @@ describe('BudgetBar', () => {
       maxBudget: 500,
     })
     render(<BudgetBar category={category} />)
-    expect(screen.getByText('Over budget!')).toBeInTheDocument()
+    expect(screen.getByText('€ 100,00 over budget')).toBeInTheDocument()
+  })
+
+  it('shows depleted when budget is fully used', () => {
+    const category = createCategoryWithBudget({
+      budgetStatus: 'depleted',
+      spent: 200,
+      remaining: 0,
+      maxBudget: 200,
+    })
+    render(<BudgetBar category={category} />)
+    expect(screen.getByText('Budget op')).toBeInTheDocument()
+    expect(screen.queryByText('Bijna op')).not.toBeInTheDocument()
   })
 
   it('shows warning when budget is almost depleted', () => {

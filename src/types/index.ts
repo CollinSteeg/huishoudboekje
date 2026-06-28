@@ -28,7 +28,7 @@ export interface Category {
 export interface CategoryWithBudget extends Category {
   spent: number
   remaining: number
-  budgetStatus: 'ok' | 'warning' | 'over'
+  budgetStatus: 'ok' | 'warning' | 'depleted' | 'over'
 }
 
 export interface MonthFilter {
