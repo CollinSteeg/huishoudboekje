@@ -87,7 +87,7 @@ export function TransactionList({
                 ⋮⋮
               </span>
             )}
-            <div>
+            <div className="transaction-list__content">
               <strong>
                 {transaction.description || (transaction.amount >= 0 ? 'Inkomst' : 'Uitgave')}
               </strong>

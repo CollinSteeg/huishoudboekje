@@ -275,6 +275,11 @@ textarea {
   flex-wrap: wrap;
 }
 
+.transaction-list__actions {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -444,12 +449,17 @@ textarea {
 
 .transaction-list__item {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   background: #fff;
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.transaction-list__content {
+  flex: 1;
+  min-width: 0;
 }
 
 .transaction-list__meta {
