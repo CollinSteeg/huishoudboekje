@@ -9,9 +9,6 @@ coverage
 # Firebase CLI cache
 .firebase/
 
-# Firebase
-.firebaserc
-
 # Logs
 logs
 *.log
