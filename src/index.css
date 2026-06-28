@@ -178,6 +178,11 @@ textarea {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
+.category-card--expired {
+  opacity: 0.75;
+  background: #f9fafb;
+}
+
 .book-card {
   display: flex;
   justify-content: space-between;
@@ -474,6 +479,11 @@ textarea {
 
 .budget-bar__fill--over {
   background: #dc2626;
+}
+
+.budget-bar__expired {
+  color: #6b7280;
+  font-weight: 600;
 }
 
 .budget-bar__warning {

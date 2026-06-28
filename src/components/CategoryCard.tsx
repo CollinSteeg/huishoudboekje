@@ -1,4 +1,5 @@
 import type { CategoryWithBudget } from '../types'
+import { isCategoryExpired } from '../utils/categoryHelpers'
 import { BudgetBar } from './BudgetBar'
 import { Button } from './Button'
 
@@ -10,8 +11,10 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ category, onEdit, onDelete, readOnly = false }: CategoryCardProps) {
+  const expired = isCategoryExpired(category.endDate)
+
   return (
-    <article className="category-card">
+    <article className={`category-card${expired ? ' category-card--expired' : ''}`}>
       <BudgetBar category={category} />
       {!readOnly && onEdit && onDelete && (
         <div className="category-card__actions">

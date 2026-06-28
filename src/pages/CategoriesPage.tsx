@@ -10,6 +10,7 @@ import { useCategories } from '../hooks/useCategories'
 import { useHouseholdBook } from '../hooks/useHouseholdBook'
 import type { CategoryWithBudget } from '../types'
 import { getBookAccess } from '../utils/bookAccess'
+import { isCategoryExpired } from '../utils/categoryHelpers'
 import { categoryService } from '../services/categoryService'
 
 export function CategoriesPage() {
@@ -25,6 +26,14 @@ export function CategoriesPage() {
   const access = useMemo(
     () => (book && user ? getBookAccess(book, user) : null),
     [book, user],
+  )
+
+  const sortedCategories = useMemo(
+    () =>
+      [...categories].sort(
+        (a, b) => Number(isCategoryExpired(a.endDate)) - Number(isCategoryExpired(b.endDate)),
+      ),
+    [categories],
   )
 
   if (bookLoading) {
@@ -86,7 +95,7 @@ export function CategoriesPage() {
         <p className="empty-state">Nog geen categorieën. Voeg er een toe!</p>
       ) : (
         <div className="category-list">
-          {categories.map((category) => (
+          {sortedCategories.map((category) => (
             <CategoryCard
               key={category.id}
               category={category}
