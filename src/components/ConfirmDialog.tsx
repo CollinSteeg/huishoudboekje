@@ -21,7 +21,7 @@ export function ConfirmDialog({
   loading = false,
 }: ConfirmDialogProps) {
   return (
-    <Modal title={title} open={open} onClose={onCancel}>
+    <Modal title={title} open={open} onClose={onCancel} showCloseButton={false}>
       <p className="confirm-dialog__message">{message}</p>
       <div className="form-actions">
         <Button variant="secondary" onClick={onCancel} disabled={loading}>
